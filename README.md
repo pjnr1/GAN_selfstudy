@@ -11,3 +11,7 @@ The idea, besides "learning GANs" is to apply the study in a "the Feynman-method
 This is a personal repo and everything should be at this point taken "with a gram of salt".
 
 
+## TODO
+
+Checkout Justin Johnsons course on Deep Learning for Computer Vision (they have two lectures on generative models):
+https://web.eecs.umich.edu/~justincj/teaching/eecs498/WI2022/
