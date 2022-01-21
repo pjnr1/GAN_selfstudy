@@ -1,3 +1,5 @@
+from functools import partial
+
 import torch
 
 
@@ -5,19 +7,23 @@ def train_GAN(generator, discriminator, gan_model, latent_dim,
               real_generator, fake_generator, latent_generator,
               loss_func=torch.nn.MSELoss,
               n_epochs=10000, n_batch=128, n_eval=2000,
-              summarize_func=None):
-    def _train_batch(X, y, model, optimizer):
-        optimizer.zero_grad()
+              summarize_func=None,
+              optimizer=partial(torch.optim.Adam, lr=0.0002)):
+    def _train_batch(X, y, model, optim):
+        optim.zero_grad()
         loss = loss_func()(model(X), y)
         loss.backward()
-        optimizer.step()
-        return model, optimizer, loss
+        optim.step()
+        return model, optim, loss
 
-    optimizer_discriminator = torch.optim.Adam(discriminator.parameters())
-    optimizer_generator = torch.optim.Adam(generator.parameters())
+    # setup optimizers
+    optimizer_discriminator = optimizer(discriminator.parameters())
+    optimizer_generator = optimizer(generator.parameters())
+
     # determine half the size of one batch, for updating the discriminator
     half_batch = int(n_batch / 2)
-    # manually enumerate epochs
+
+    # for-loop over epochs
     for i in range(n_epochs):
         # prepare real samples
         x_real, y_real = real_generator(half_batch)
