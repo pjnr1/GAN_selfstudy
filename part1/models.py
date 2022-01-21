@@ -8,12 +8,19 @@ def noop(args):
 
 
 class SimpleModel(torch.nn.Module):
-    def __init__(self, n_input, n_output, n_hidden, n_hidden_layers=1, output_activation=noop):
+    def __init__(self,
+                 n_input,
+                 n_output,
+                 n_hidden,
+                 n_hidden_layers=1,
+                 activation=torch.nn.ReLU(),
+                 output_activation=noop):
         super().__init__()
         self.n_input = n_input
         self.n_output = n_output
         self.n_hidden = n_hidden
         self.n_hidden_layers = n_hidden_layers
+        self.activation = activation
 
         for i in range(self.n_hidden_layers):
             layer = torch.nn.Linear(in_features=self.n_input if i == 0 else self.n_hidden,
@@ -36,7 +43,7 @@ class SimpleModel(torch.nn.Module):
         # feed hidden layers
         for i in range(self.n_hidden_layers):
             X = self.__getattr__("hidden_layer_" + str(i))(X)
-            X = F.relu(X)
+            X = self.activation(X)
         # feed output layer
         return self.output_activation(self.output_layer(X))
 
@@ -46,4 +53,3 @@ class GAN(torch.nn.Sequential):
         super().__init__(*args)
         self.add_module("generator", g)
         self.add_module("discriminator", d)
-
